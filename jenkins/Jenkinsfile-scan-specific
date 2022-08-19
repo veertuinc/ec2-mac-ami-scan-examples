@@ -1,0 +1,26 @@
+properties([
+    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')),
+    durabilityHint('PERFORMANCE_OPTIMIZED'), 
+    disableResume(),
+    parameters([
+      string(name: 'AMI_ID', defaultValue: "", description: 'MacOS AMI ID to scan', trim: false),
+      string(name: 'CLI_EXTRAS', defaultValue: "", description: 'Any scanner CLI flags/options to include', trim: false),
+    ])
+])
+
+pipeline {
+  agent { node { label 'ec2-mac-ami-scan-us-west-2-930457884660' } }
+  stages {
+    stage("Run the EC2 Mac AMI Scan for each of our Community AMIs") {
+      steps {
+        sh "./jenkins/scan-specific.bash ${AMI_ID} \"${CLI_EXTRAS}\""
+      }
+    }
+  }
+
+  post { always { script {
+    archiveArtifacts artifacts: '*.log', fingerprint: true
+    deleteDir()
+  } } }
+
+}
