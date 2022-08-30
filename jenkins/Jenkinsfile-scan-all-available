@@ -13,7 +13,7 @@ pipeline {
   stages {
     stage("Run the EC2 Mac AMI Scan for each of our Community AMIs") {
       steps {
-        sh "./jenkins/scan-all-available.bash ${AMI_NAME_PATTERN} \"${CLI_EXTRAS}\""
+        sh "./jenkins/scan-all-available.bash \"${AMI_NAME_PATTERN}\" \"${CLI_EXTRAS}\""
       }
     }
   }
